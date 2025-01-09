@@ -64,7 +64,7 @@ impl MultiDict {
                 return Ok(item);
             }
         }
-        Err("No matching key found for key")
+        Err("No matching key found")
     }
 
     /// If key is in the MultiDict, remove it and return its the first value, else return error
@@ -74,10 +74,32 @@ impl MultiDict {
                 return Ok(self.elements.remove(idx));
             }
         }
-        Err("No matching key found for key")
+        Err("No matching key found")
     }
 
     /// Return a list of all key-values for key if key is in the MultiDict
+    /// else - return error
+    /// # Examples
+    ///
+    /// If key exists
+    /// ```
+    /// use multidict::MultiDict;
+    ///
+    /// let mut map = MultiDict::new();
+    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
+    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
+    /// println!("{:?}", map.getall("some_key").unwrap()); // [["some_key", "some_value_1"], ["some_key", "some_value_2"]]
+    /// ```
+    ///
+    /// If key not exists
+    /// ```
+    /// use multidict::MultiDict;
+    ///
+    /// let mut map = MultiDict::new();
+    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
+    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
+    /// println!("{:?}", map.getall("some_other_key")); // Err("No matching key found")
+    /// ```
     pub fn getall(&self, key: &str) -> Result<Vec<&[String; 2]>, &str> {
         let mut results = Vec::new();
         for item in &self.elements {
@@ -88,7 +110,7 @@ impl MultiDict {
         if !results.is_empty() {
             Ok(results)
         } else {
-            Err("No matching key found for key")
+            Err("No matching key found")
         }
     }
 
