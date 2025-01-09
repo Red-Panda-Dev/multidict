@@ -1,7 +1,5 @@
 # multidict
 
-<hr>
-
 [![Crates.io Version](https://img.shields.io/crates/v/rust-anticaptcha?label=Version&style=flat&color=green)](https://crates.io/crates/rust-anticaptcha)
 [![Crates.io Downloads (latest version)](https://img.shields.io/crates/dv/rust-anticaptcha?style=flat&label=Downloads&color=blue)](https://crates.io/crates/rust-anticaptcha)
 ![Crates.io MSRV](https://img.shields.io/crates/msrv/rust-anticaptcha?label=cargo)
