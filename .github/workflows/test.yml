@@ -1,0 +1,31 @@
+name: Tests
+
+on:
+  push:
+    branches: [ "master"]
+    paths:
+      - '.github/workflows/test.yml'
+      - 'src/**'
+      - 'tests/**'
+      - 'Cargo.toml'
+  pull_request:
+    branches: [ "master", "release"]
+    paths:
+      - '.github/workflows/test.yml'
+      - 'src/**'
+      - 'tests/**'
+      - 'Cargo.toml'
+  schedule:
+    - cron: "5 0 * * 1"
+
+env:
+  CARGO_TERM_COLOR: always
+  API_KEY: ${{ secrets.API_KEY }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Test
+      run: cargo test --verbose

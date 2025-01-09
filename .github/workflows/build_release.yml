@@ -1,0 +1,30 @@
+name: Build Release
+
+on:
+  push:
+    branches: [ "master"]
+    paths:
+      - '.github/workflows/build_release.yml'
+      - 'src/**'
+      - 'Cargo.toml'
+  pull_request:
+    branches: [ "master", "release"]
+    paths:
+      - '.github/workflows/build_release.yml'
+      - 'src/**'
+      - 'Cargo.toml'
+  schedule:
+    - cron: "5 0 * * 1"
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build release
+      run: cargo build --release --verbose
