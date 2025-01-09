@@ -7,15 +7,28 @@
 //! and preserves insertion ordering
 //!
 //! ## Examples
+//!
+//! Basic `MultiDict` creation and filling with data
 //! ```
 //! use multidict::MultiDict;
 //!
 //! let mut map = MultiDict::new();
 //! let mut map = MultiDict::new();
-//! map.add(["some_key".to_string(), "some_value".to_string()]);
-//! println!("{map:?}"); // MultiDict { elements: [["some_key", "some_value"]] }
-//! map.add(["some_key".to_string(), "some_value".to_string()]);
-//! println!("{map:?}"); // MultiDict { elements: [["some_key", "some_value"], ["some_key", "some_value"]] }
+//! map.add(["some_key".to_string(), "some_value_1".to_string()]);
+//! println!("{map:?}"); // MultiDict { elements: [["some_key", "some_value_1"]] }
+//! map.add(["some_key".to_string(), "some_value_2".to_string()]);
+//! println!("{map:?}"); // MultiDict { elements: [["some_key", "some_value_1"], ["some_key", "some_value_2"]] }
+//! ```
+//!
+//! Get **all** key-values pairs for key
+//! ```
+//! use multidict::MultiDict;
+//!
+//! let mut map = MultiDict::new();
+//! map.add(["some_key".to_string(), "some_value_1".to_string()]);
+//! map.add(["some_key".to_string(), "some_value_2".to_string()]);
+//! map.add(["some_other_key".to_string(), "some_value_3".to_string()]);
+//! println!("{:?}", map.getall("some_key").unwrap()); // [["some_key", "some_value_1"], ["some_key", "some_value_2"]]
 //! ```
 //!
 #[derive(Debug, Clone)]
@@ -23,13 +36,43 @@ pub struct MultiDict {
     pub elements: Vec<[String; 2]>,
 }
 impl MultiDict {
+    /// Return new MultiDict instance
+    ///
+    /// # Examples
+    /// ```
+    /// use multidict::MultiDict;
+    ///
+    /// let mut map: MultiDict = MultiDict::new();
+    /// ```
     pub fn new() -> Self {
         MultiDict {
             elements: Vec::new(),
         }
     }
 
-    /// Creates new object with preset capacity
+    /// Return new MultiDict instance with preset capacity
+    ///
+    /// # Examples
+    ///
+    /// Capacity will only prepare Vector with element for future elements,
+    /// but it can expand
+    /// ```
+    /// use multidict::MultiDict;
+    ///
+    /// let mut map: MultiDict = MultiDict::new_capacity(&2);
+    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
+    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
+    /// println!("{:?}", map.len()); // 2
+    /// ```
+    /// ```
+    /// use multidict::MultiDict;
+    ///
+    /// let mut map: MultiDict = MultiDict::new_capacity(&2);
+    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
+    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
+    /// map.add(["some_other_key".to_string(), "some_value_3".to_string()]);
+    /// println!("{:?}", map.len()); // 3
+    /// ```
     pub fn new_capacity(capacity: &usize) -> Self {
         MultiDict {
             elements: Vec::with_capacity(capacity.clone()),
@@ -37,6 +80,16 @@ impl MultiDict {
     }
 
     /// Return the number of items in MultiDict
+    ///
+    /// # Examples
+    /// ```
+    /// use multidict::MultiDict;
+    ///
+    /// let mut map = MultiDict::new();
+    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
+    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
+    /// println!("{:?}", map.len()); // 2
+    /// ```
     pub fn len(&self) -> usize {
         self.elements.len()
     }
@@ -57,7 +110,29 @@ impl MultiDict {
         self.elements.push(new_item);
     }
 
-    /// Return the first key-value pair for key if key is in the MultiDict
+    /// Return the **first** key-value pair for key if key is in the MultiDict
+    ///
+    /// # Examples
+    ///
+    /// If key exists
+    /// ```
+    /// use multidict::MultiDict;
+    ///
+    /// let mut map = MultiDict::new();
+    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
+    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
+    /// println!("{:?}", map.get("some_key").unwrap()); // ["some_key", "some_value_1"]
+    /// ```
+    ///
+    /// If key not exists
+    /// ```
+    /// use multidict::MultiDict;
+    ///
+    /// let mut map = MultiDict::new();
+    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
+    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
+    /// println!("{:?}", map.get("some_other_key")); // Err("No matching key found")
+    /// ```
     pub fn get(&self, key: &str) -> Result<&[String; 2], &str> {
         for item in &self.elements {
             if item.get(0).unwrap().eq(key) {
@@ -67,7 +142,33 @@ impl MultiDict {
         Err("No matching key found")
     }
 
-    /// If key is in the MultiDict, remove it and return its the first value, else return error
+    /// If key is in the MultiDict, remove it and return its the **first** value,
+    /// else return error text
+    ///
+    /// # Examples
+    ///
+    /// If key exists
+    /// ```
+    /// use multidict::MultiDict;
+    ///
+    /// let mut map = MultiDict::new();
+    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
+    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
+    /// println!("{:?}", map.popone("some_key").unwrap()); // ["some_key", "some_value_1"]
+    /// println!("{:?}", map); // MultiDict { elements: [["some_key", "some_value_2"]] }
+    /// ```
+    ///
+    /// If key not exists
+    /// ```
+    /// use multidict::MultiDict;
+    ///
+    /// let mut map = MultiDict::new();
+    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
+    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
+    /// println!("{:?}", map.popone("some_other_key")); // Err("No matching key found")
+    /// println!("{:?}", map); // MultiDict { elements: [["some_key", "some_value_1"], ["some_key", "some_value_2"]] }
+    /// ```
+    ///
     pub fn popone(&mut self, key: &str) -> Result<[String; 2], &str> {
         for (idx, item) in self.elements.iter().enumerate() {
             if item.get(0).unwrap().eq(key) {
@@ -79,6 +180,7 @@ impl MultiDict {
 
     /// Return a list of all key-values for key if key is in the MultiDict
     /// else - return error
+    ///
     /// # Examples
     ///
     /// If key exists
@@ -185,7 +287,7 @@ impl MultiDict {
     ///
     /// # Examples
     ///
-    /// This function update values *only* for already exists keys
+    /// This function update values **only** for already exists keys
     /// ```
     /// use multidict::MultiDict;
     ///
