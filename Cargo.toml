@@ -1,7 +1,7 @@
 [package]
 name = "multidict"
-version = "0.0.1"
-description = "Python multidict implementation."
+version = "0.1.0"
+description = "Python MultiDict implementation."
 edition = "2021"
 authors = ["Red-Panda-Dev <red_panda_dev@pm.me>"]
 keywords = ["multidict", "data-structure"]
