@@ -1,6 +1,6 @@
 # multidict
 
-[![Logo_640x320_.png](https://s.vyjava.xyz/files/2025/01-January/09/49828baf/Logo_640x320_.png)](https://vyjava.xyz/dashboard/image/49828baf-f890-47a8-b7c3-99179c855004)
+[![Logo.png](https://s.vyjava.xyz/files/2025/01-January/09/49828baf/Logo.png)](https://vyjava.xyz/dashboard/image/49828baf-f890-47a8-b7c3-99179c855004)
 
 [![Crates.io Version](https://img.shields.io/crates/v/multidict?label=Version&style=flat&color=green)](https://crates.io/crates/multidict)
 [![Crates.io Downloads (latest version)](https://img.shields.io/crates/dv/multidict?style=flat&label=Downloads&color=blue)](https://crates.io/crates/multidict)
