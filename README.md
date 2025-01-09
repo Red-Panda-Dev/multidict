@@ -1,9 +1,9 @@
 # multidict
 
-[![Crates.io Version](https://img.shields.io/crates/v/rust-anticaptcha?label=Version&style=flat&color=green)](https://crates.io/crates/rust-anticaptcha)
-[![Crates.io Downloads (latest version)](https://img.shields.io/crates/dv/rust-anticaptcha?style=flat&label=Downloads&color=blue)](https://crates.io/crates/rust-anticaptcha)
-![Crates.io MSRV](https://img.shields.io/crates/msrv/rust-anticaptcha?label=cargo)
-[![Static Badge](https://img.shields.io/badge/docs-docs.rs-green?label=Documentation&labelColor=gray)](https://docs.rs/rust-anticaptcha/)
+[![Crates.io Version](https://img.shields.io/crates/v/multidict?label=Version&style=flat&color=green)](https://crates.io/crates/multidict)
+[![Crates.io Downloads (latest version)](https://img.shields.io/crates/dv/multidict?style=flat&label=Downloads&color=blue)](https://crates.io/crates/multidict)
+![Crates.io MSRV](https://img.shields.io/crates/msrv/multidict?label=cargo)
+[![Static Badge](https://img.shields.io/badge/docs-docs.rs-green?label=Documentation&labelColor=gray)](https://docs.rs/multidict/)
 
 
 [![Build Doc](https://github.com/Red-Panda-Dev/multidict/actions/workflows/build_doc.yml/badge.svg?branch=master)](https://github.com/Red-Panda-Dev/multidict/actions/workflows/build_doc.yml)
@@ -18,7 +18,7 @@ It behaves mostly like a regular map but it may have several values for the same
 
 ## How to install?
 
-We recommend using the latest version of Rust. `rust-anticaptcha` supports Rust 2021.
+We recommend using the latest version of Rust. `multidict` supports Rust 2021.
 
 Install by Cargo command:
 ```bash
