@@ -10,34 +10,92 @@
 //!
 //! Basic `MultiDict` creation and filling with data
 //! ```
-//! use multidict::MultiDict;
+//! use multidict::{MultiDict, MultiElement};
 //!
 //! let mut map = MultiDict::new();
-//! let mut map = MultiDict::new();
-//! map.add(["some_key".to_string(), "some_value_1".to_string()]);
-//! println!("{map:?}"); // MultiDict { elements: [["some_key", "some_value_1"]] }
-//! map.add(["some_key".to_string(), "some_value_2".to_string()]);
-//! println!("{map:?}"); // MultiDict { elements: [["some_key", "some_value_1"], ["some_key", "some_value_2"]] }
+//! map.add(MultiElement {
+//!             key: "some_key".to_string(),
+//!             value: "some_value_1".to_string(),
+//!         });
+//! println!("{map}"); // MultiDict < "some_key":"some_value_1" >
+//! map.add(MultiElement {
+//!             key: "some_key".to_string(),
+//!             value: "some_value_2".to_string(),
+//!         });
+//! println!("{map}");
+//! // MultiDict < "some_key":"some_value_1", "some_key":"some_value_2" >
 //! ```
 //!
 //! Get **all** key-values pairs for key
 //! ```
-//! use multidict::MultiDict;
+//! use multidict::{MultiDict, MultiElement};
 //!
 //! let mut map = MultiDict::new();
-//! map.add(["some_key".to_string(), "some_value_1".to_string()]);
-//! map.add(["some_key".to_string(), "some_value_2".to_string()]);
-//! map.add(["some_other_key".to_string(), "some_value_3".to_string()]);
-//! println!("{:?}", map.getall("some_key").unwrap()); // [["some_key", "some_value_1"], ["some_key", "some_value_2"]]
+//! map.add(MultiElement {
+//!             key: "some_key".to_string(),
+//!             value: "some_value_1".to_string(),
+//!         });
+//! map.add(MultiElement {
+//!             key: "some_key".to_string(),
+//!             value: "some_value_2".to_string(),
+//!         });
+//! map.add(MultiElement {
+//!             key: "some_other_key".to_string(),
+//!             value: "some_value_3".to_string(),
+//!         });
+//! println!("{}", map.getall("some_key").unwrap());
+//! // MultiDict < "some_key":"some_value_1", "some_key":"some_value_2" >
 //! ```
 //!
+//! `MultiDict` debug output
+//! ```
+//! use multidict::{MultiDict, MultiElement};
+//!
+//! let mut map = MultiDict::new();
+//! map.add(MultiElement {
+//!             key: "some_key".to_string(),
+//!             value: "some_value_1".to_string(),
+//!         });
+//! map.add(MultiElement {
+//!             key: "some_key".to_string(),
+//!             value: "some_value_2".to_string(),
+//!         });
+//! map.add(MultiElement {
+//!             key: "some_other_key".to_string(),
+//!             value: "some_value_3".to_string(),
+//!         });
+//! println!("{map:?}");
+//! // MultiDict { elements: [
+//! //  MultiElement { key: "some_key", value: "some_value_1" },
+//! //  MultiElement { key: "some_key", value: "some_value_2" },
+//! //  MultiElement { key: "some_other_key", value: "some_value_3" }
+//! // ] }
+//! ```
 
 use std::fmt;
 
+#[derive(Debug, Clone)]
+pub struct MultiElement {
+    pub key: String,
+    pub value: String,
+}
+impl fmt::Display for MultiElement {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, r#"MultiElement < "{}":"{}" >"#, self.key, self.value)
+    }
+}
+impl MultiElement {
+    pub fn new(new_element: [String; 2]) -> Self {
+        MultiElement {
+            key: new_element[0].clone(),
+            value: new_element[1].clone(),
+        }
+    }
+}
 /// Crate was inspired by Python `MultiDict` library
 #[derive(Debug, Clone)]
 pub struct MultiDict {
-    pub elements: Vec<[String; 2]>,
+    pub elements: Vec<MultiElement>,
 }
 impl fmt::Display for MultiDict {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -46,7 +104,7 @@ impl fmt::Display for MultiDict {
             "MultiDict < {} >",
             self.elements
                 .iter()
-                .map(|item| format!(r#""{}":"{}""#, item[0], item[1]))
+                .map(|item| format!(r#""{}":"{}""#, item.key, item.value))
                 .collect::<Vec<_>>()
                 .join(", ")
         )
@@ -57,7 +115,7 @@ impl MultiDict {
     ///
     /// # Examples
     /// ```
-    /// use multidict::MultiDict;
+    /// use multidict::{MultiDict, MultiElement};
     ///
     /// let mut map: MultiDict = MultiDict::new();
     /// ```
@@ -74,21 +132,36 @@ impl MultiDict {
     /// Capacity will only prepare Vector with element for future elements,
     /// but it can expand
     /// ```
-    /// use multidict::MultiDict;
+    /// use multidict::{MultiDict, MultiElement};
     ///
     /// let mut map: MultiDict = MultiDict::new_capacity(&2);
-    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
-    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
-    /// println!("{:?}", map.len()); // 2
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
+    /// println!("{}", map.len()); // 2
     /// ```
     /// ```
-    /// use multidict::MultiDict;
+    /// use multidict::{MultiDict, MultiElement};
     ///
     /// let mut map: MultiDict = MultiDict::new_capacity(&2);
-    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
-    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
-    /// map.add(["some_other_key".to_string(), "some_value_3".to_string()]);
-    /// println!("{:?}", map.len()); // 3
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_other_key".to_string(),
+    ///             value: "some_value_3".to_string(),
+    ///         });
+    /// println!("{}", map.len()); // 3
     /// ```
     pub fn new_capacity(capacity: &usize) -> Self {
         MultiDict {
@@ -100,12 +173,18 @@ impl MultiDict {
     ///
     /// # Examples
     /// ```
-    /// use multidict::MultiDict;
+    /// use multidict::{MultiDict, MultiElement};
     ///
     /// let mut map = MultiDict::new();
-    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
-    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
-    /// println!("{:?}", map.len()); // 2
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
+    /// println!("{}", map.len()); // 2
     /// ```
     pub fn len(&self) -> usize {
         self.elements.len()
@@ -115,15 +194,23 @@ impl MultiDict {
     ///
     /// # Examples
     /// ```
-    /// use multidict::MultiDict;
+    /// use multidict::{MultiDict, MultiElement};
     ///
     /// let mut map = MultiDict::new();
-    /// map.add(["some_key".to_string(), "some_value".to_string()]);
-    /// println!("{map:?}"); // MultiDict { elements: [["some_key", "some_value"]] }
-    /// map.add(["some_key".to_string(), "some_value".to_string()]);
-    /// println!("{map:?}"); // MultiDict { elements: [["some_key", "some_value"], ["some_key", "some_value"]] }
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// println!("{map}");
+    /// // MultiDict < "some_key":"some_value_1" >
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
+    /// println!("{map}");
+    /// // MultiDict < "some_key":"some_value_1", "some_key":"some_value_2" >
     /// ```
-    pub fn add(&mut self, new_item: [String; 2]) {
+    pub fn add(&mut self, new_item: MultiElement) {
         self.elements.push(new_item);
     }
 
@@ -133,26 +220,40 @@ impl MultiDict {
     ///
     /// If key exists
     /// ```
-    /// use multidict::MultiDict;
+    /// use multidict::{MultiDict, MultiElement};
     ///
     /// let mut map = MultiDict::new();
-    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
-    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
-    /// println!("{:?}", map.get("some_key").unwrap()); // ["some_key", "some_value_1"]
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
+    /// println!("{}", map.get("some_key").unwrap());
+    /// // MultiElement < "some_key":"some_value_1" >
     /// ```
     ///
     /// If key not exists
     /// ```
-    /// use multidict::MultiDict;
+    /// use multidict::{MultiDict, MultiElement};
     ///
     /// let mut map = MultiDict::new();
-    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
-    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
-    /// println!("{:?}", map.get("some_other_key")); // Err("No matching key found")
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
+    /// println!("{:?}", map.get("some_other_key"));
+    /// // Err("No matching key found")
     /// ```
-    pub fn get(&self, key: &str) -> Result<&[String; 2], &str> {
+    pub fn get(&self, key: &str) -> Result<&MultiElement, &str> {
         for item in &self.elements {
-            if item.get(0).unwrap().eq(key) {
+            if item.key.eq(key) {
                 return Ok(item);
             }
         }
@@ -166,29 +267,47 @@ impl MultiDict {
     ///
     /// If key exists
     /// ```
-    /// use multidict::MultiDict;
+    /// use multidict::{MultiDict, MultiElement};
     ///
     /// let mut map = MultiDict::new();
-    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
-    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
-    /// println!("{:?}", map.popone("some_key").unwrap()); // ["some_key", "some_value_1"]
-    /// println!("{:?}", map); // MultiDict { elements: [["some_key", "some_value_2"]] }
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
+    /// println!("{}", map);
+    /// // MultiDict < "some_key":"some_value_1", "some_key":"some_value_2" >
+    /// println!("{}", map.popone("some_key").unwrap());
+    /// // MultiElement < "some_key":"some_value_1" >
+    /// println!("{}", map);
+    /// // MultiDict < "some_key":"some_value_2" >
     /// ```
     ///
     /// If key not exists
     /// ```
-    /// use multidict::MultiDict;
+    /// use multidict::{MultiDict, MultiElement};
     ///
     /// let mut map = MultiDict::new();
-    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
-    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
-    /// println!("{:?}", map.popone("some_other_key")); // Err("No matching key found")
-    /// println!("{:?}", map); // MultiDict { elements: [["some_key", "some_value_1"], ["some_key", "some_value_2"]] }
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
+    /// println!("{:?}", map.popone("some_other_key"));
+    /// // Err("No matching key found")
+    /// println!("{}", map);
+    /// // MultiDict < "some_key":"some_value_1", "some_key":"some_value_2" >
     /// ```
     ///
-    pub fn popone(&mut self, key: &str) -> Result<[String; 2], &str> {
+    pub fn popone(&mut self, key: &str) -> Result<MultiElement, &str> {
         for (idx, item) in self.elements.iter().enumerate() {
-            if item.get(0).unwrap().eq(key) {
+            if item.key.eq(key) {
                 return Ok(self.elements.remove(idx));
             }
         }
@@ -202,31 +321,44 @@ impl MultiDict {
     ///
     /// If key exists
     /// ```
-    /// use multidict::MultiDict;
+    /// use multidict::{MultiDict, MultiElement};
     ///
     /// let mut map = MultiDict::new();
-    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
-    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
-    /// println!("{:?}", map.getall("some_key").unwrap()); // [["some_key", "some_value_1"], ["some_key", "some_value_2"]]
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
+    /// println!("{}", map.getall("some_key").unwrap());
+    /// // MultiDict < "some_key":"some_value_1", "some_key":"some_value_2" >
     /// ```
     ///
     /// If key not exists
     /// ```
-    /// use multidict::MultiDict;
+    /// use multidict::{MultiDict, MultiElement};
     ///
     /// let mut map = MultiDict::new();
-    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
-    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
     /// println!("{:?}", map.getall("some_other_key")); // Err("No matching key found")
     /// ```
-    pub fn getall(&self, key: &str) -> Result<Vec<&[String; 2]>, &str> {
-        let mut results = Vec::new();
+    pub fn getall(&self, key: &str) -> Result<MultiDict, &str> {
+        let mut results = MultiDict::new();
         for item in &self.elements {
-            if item.get(0).unwrap().eq(key) {
-                results.push(item);
+            if item.key.eq(key) {
+                results.add(item.clone());
             }
         }
-        if !results.is_empty() {
+        if results.len() > 0 {
             Ok(results)
         } else {
             Err("No matching key found")
@@ -239,26 +371,40 @@ impl MultiDict {
     ///
     /// If key exists
     /// ```
-    /// use multidict::MultiDict;
+    /// use multidict::{MultiDict, MultiElement};
     ///
     /// let mut map = MultiDict::new();
-    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
-    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
-    /// println!("{:?}", map.contains("some_key")); // true
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
+    /// println!("{}", map.contains("some_key"));
+    /// // true
     /// ```
     ///
     /// If key not exists
     /// ```
-    /// use multidict::MultiDict;
+    /// use multidict::{MultiDict, MultiElement};
     ///
     /// let mut map = MultiDict::new();
-    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
-    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
-    /// println!("{:?}", map.contains("some_other_key")); // false
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
+    /// println!("{}", map.contains("some_other_key"));
+    /// // false
     /// ```
     pub fn contains(&self, key: &str) -> bool {
         for item in &self.elements {
-            if item.get(0).unwrap().eq(key) {
+            if item.key.eq(key) {
                 return true;
             }
         }
@@ -271,16 +417,30 @@ impl MultiDict {
     /// # Examples
     ///
     /// ```
-    /// use multidict::MultiDict;
+    /// use multidict::{MultiDict, MultiElement};
     ///
     /// let mut map = MultiDict::new();
-    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
-    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
-    /// map.add(["some_other_key".to_string(), "some_value_2".to_string()]);
-    /// println!("{:?}", map.values()); // ["some_key", "some_key", "some_other_key"]
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_other_key".to_string(),
+    ///             value: "some_value_3".to_string(),
+    ///         });
+    /// println!("{:?}", map.keys());
+    /// // ["some_key", "some_key", "some_other_key"]
     /// ```
     pub fn keys(&self) -> Vec<&String> {
-        self.item_by_idx(0)
+        let mut results: Vec<&String> = Vec::with_capacity(self.elements.len());
+        for item in &self.elements {
+            results.push(&item.key);
+        }
+        results
     }
 
     /// Return Vec of all values form MultiDict.
@@ -288,15 +448,30 @@ impl MultiDict {
     /// # Examples
     ///
     /// ```
-    /// use multidict::MultiDict;
+    /// use multidict::{MultiDict, MultiElement};
     ///
     /// let mut map = MultiDict::new();
-    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
-    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
-    /// println!("{:?}", map.values()); // ["some_value_1", "some_value_2"]
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_other_key".to_string(),
+    ///             value: "some_value_3".to_string(),
+    ///         });
+    /// println!("{:?}", map.values());
+    /// // ["some_value_1", "some_value_2", "some_value_3"]
     /// ```
     pub fn values(&self) -> Vec<&String> {
-        self.item_by_idx(1)
+        let mut results: Vec<&String> = Vec::with_capacity(self.elements.len());
+        for item in &self.elements {
+            results.push(&item.value);
+        }
+        results
     }
 
     /// Update the MultiDict with the key/value pairs,
@@ -306,33 +481,55 @@ impl MultiDict {
     ///
     /// This function update values **only** for already exists keys
     /// ```
-    /// use multidict::MultiDict;
+    /// use multidict::{MultiDict, MultiElement};
     ///
     /// let mut map = MultiDict::new();
-    /// map.add(["some_key".to_string(), "some_value".to_string()]);
-    /// map.update(["some_other_key".to_string(), "some_other_value".to_string()]);
-    /// println!("{map:?}"); // MultiDict { elements: [["some_key", "some_value"]] }
-    /// map.update(["some_key".to_string(), "some_other_value".to_string()]);
-    /// println!("{map:?}"); // MultiDict { elements: [["some_key", "some_other_value"]] }
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_other_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
+    /// println!("{map}");
+    /// // MultiDict < "some_key":"some_value_1", "some_other_key":"some_value_2" >
+    /// map.update(MultiElement {
+    ///             key: "some_other_key".to_string(),
+    ///             value: "some_value_3".to_string(),
+    ///         });
+    /// println!("{map}");
+    /// // MultiDict < "some_key":"some_value_1", "some_other_key":"some_value_3" >
     /// ```
     ///
     /// And it's update all equal keys values
     /// ```
-    /// use multidict::MultiDict;
+    /// use multidict::{MultiDict, MultiElement};
     ///
     /// let mut map = MultiDict::new();
-    /// map.add(["some_key".to_string(), "some_value_1".to_string()]);
-    /// map.add(["some_key".to_string(), "some_value_2".to_string()]);
-    /// println!("{map:?}"); // MultiDict { elements: [["some_key", "some_value_1"], ["some_key", "some_value_2"]] }
-    /// map.update(["some_key".to_string(), "some_other_value".to_string()]);
-    /// println!("{map:?}"); // MultiDict { elements: [["some_key", "some_other_value"], ["some_key", "some_other_value"]] }
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
+    /// println!("{map}");
+    /// // MultiDict < "some_key":"some_value_1", "some_key":"some_value_2" >
+    /// map.update(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_3".to_string(),
+    ///         });
+    /// println!("{map}");
+    /// // MultiDict < "some_key":"some_value_3", "some_key":"some_value_3" >
     /// ```
-    pub fn update(&mut self, new_item: [String; 2]) {
-        let new_item_key = new_item[0].clone();
+    pub fn update(&mut self, new_item: MultiElement) {
+        let new_item_key = &new_item.key;
         let mut ids_for_replace = Vec::new();
 
         for (idx, item) in self.elements.iter().enumerate() {
-            if item.get(0).unwrap().eq(&new_item_key) {
+            if item.key.eq(new_item_key) {
                 ids_for_replace.push(idx);
             }
         }
@@ -340,12 +537,5 @@ impl MultiDict {
             self.elements.remove(idx);
             self.elements.insert(idx, new_item.clone());
         }
-    }
-    fn item_by_idx(&self, idx: usize) -> Vec<&String> {
-        let mut results = Vec::with_capacity(self.elements.len());
-        for item in &self.elements {
-            results.push(item.get(idx).unwrap());
-        }
-        results
     }
 }
