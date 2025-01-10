@@ -238,7 +238,7 @@ impl MultiDict {
         self.elements.len()
     }
 
-    /// Return true if `MultiDict` has no elements,
+    /// Return true if `MultiDict` has **no** elements,
     /// else false
     ///
     /// # Examples
