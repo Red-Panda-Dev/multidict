@@ -1,6 +1,6 @@
 [package]
 name = "multidict"
-version = "0.1.0"
+version = "0.1.1"
 description = "Python MultiDict implementation."
 edition = "2021"
 authors = ["Red-Panda-Dev <red_panda_dev@pm.me>"]
