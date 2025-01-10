@@ -9,7 +9,7 @@ license = "MIT OR MPL-2.0"
 repository = "https://github.com/Red-Panda-Dev/multidict"
 homepage = "https://crates.io/crates/multidict"
 documentation = "https://docs.rs/multidict/latest/multidict/"
-rust-version = "1.83"
+rust-version = "1.84"
 exclude = ["files/*", ".github/*", ".gitignore",
             "rustfmt.toml", "LICENSE", "CODE_OF_CONDUCT.md",
             "CONTRIBUTING.md"]
