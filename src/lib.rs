@@ -31,6 +31,8 @@
 //! println!("{:?}", map.getall("some_key").unwrap()); // [["some_key", "some_value_1"], ["some_key", "some_value_2"]]
 //! ```
 //!
+
+/// Crate was inspired by Python `MultiDict` library
 #[derive(Debug, Clone)]
 pub struct MultiDict {
     pub elements: Vec<[String; 2]>,
