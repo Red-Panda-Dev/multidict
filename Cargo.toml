@@ -1,6 +1,6 @@
 [package]
 name = "multidict"
-version = "0.1.1"
+version = "0.1.2"
 description = "Python MultiDict implementation."
 edition = "2021"
 authors = ["Red-Panda-Dev <red_panda_dev@pm.me>"]
@@ -10,11 +10,11 @@ repository = "https://github.com/Red-Panda-Dev/multidict"
 homepage = "https://crates.io/crates/multidict"
 documentation = "https://docs.rs/multidict/latest/multidict/"
 rust-version = "1.83"
+exclude = ["files/*", ".github/*", ".gitignore",
+            "rustfmt.toml", "LICENSE", "CODE_OF_CONDUCT.md",
+            "CONTRIBUTING.md"]
 
 [lib]
 name = "multidict"
 path = "src/lib.rs"
 crate-type = ["lib"]
-
-[exclude]
-files = true
