@@ -32,10 +32,25 @@
 //! ```
 //!
 
+use std::fmt;
+
 /// Crate was inspired by Python `MultiDict` library
 #[derive(Debug, Clone)]
 pub struct MultiDict {
     pub elements: Vec<[String; 2]>,
+}
+impl fmt::Display for MultiDict {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "MultiDict < {} >",
+            self.elements
+                .iter()
+                .map(|item| format!(r#""{}":"{}""#, item[0], item[1]))
+                .collect::<Vec<_>>()
+                .join(", ")
+        )
+    }
 }
 impl MultiDict {
     /// Return new MultiDict instance
