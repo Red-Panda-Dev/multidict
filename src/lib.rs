@@ -74,17 +74,40 @@
 
 use std::fmt;
 
+/// `MultiElement` - element of `MultiDict` structure Vec.
 #[derive(Debug, Clone)]
 pub struct MultiElement {
     pub key: String,
     pub value: String,
 }
 impl fmt::Display for MultiElement {
+    /// `MultiElement` instance formatter
+    ///
+    /// # Examples
+    /// ```
+    /// use multidict::MultiElement;
+    ///
+    /// let element: MultiElement = MultiElement::new(["some_key".to_string(),
+    ///                                                 "some_value".to_string()
+    ///                                             ]);
+    /// println!("{element}")
+    /// // MultiElement < "some_key":"some_value_2" >
+    /// ```
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, r#"MultiElement < "{}":"{}" >"#, self.key, self.value)
     }
 }
 impl MultiElement {
+    /// Return new MultiElement instance
+    ///
+    /// # Examples
+    /// ```
+    /// use multidict::MultiElement;
+    ///
+    /// let element: MultiElement = MultiElement::new(["some_key".to_string(),
+    ///                                                 "some_value".to_string()
+    ///                                             ]);
+    /// ```
     pub fn new(new_element: [String; 2]) -> Self {
         MultiElement {
             key: new_element[0].clone(),
@@ -92,12 +115,34 @@ impl MultiElement {
         }
     }
 }
-/// Crate was inspired by Python `MultiDict` library
+
+/// `MultiDict` - structure which enable to user store multiple
+/// similar keys with different values in map-like structure.
+///
+/// Was inspired by Python `MultiDict` library
 #[derive(Debug, Clone)]
 pub struct MultiDict {
     pub elements: Vec<MultiElement>,
 }
 impl fmt::Display for MultiDict {
+    /// `MultiDict` instance formatter
+    ///
+    /// # Examples
+    /// ```
+    /// use multidict::{MultiDict, MultiElement};
+    ///
+    /// let mut map: MultiDict = MultiDict::new();
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
+    /// println!("{}", map);
+    /// // MultiDict < "some_key":"some_value_1", "some_key":"some_value_2" >
+    /// ```
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
@@ -115,7 +160,7 @@ impl MultiDict {
     ///
     /// # Examples
     /// ```
-    /// use multidict::{MultiDict, MultiElement};
+    /// use multidict::MultiDict;
     ///
     /// let mut map: MultiDict = MultiDict::new();
     /// ```
