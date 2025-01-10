@@ -120,7 +120,7 @@ impl MultiElement {
 /// similar keys with different values in map-like structure.
 ///
 /// Was inspired by Python `MultiDict` library
-#[derive(Debug, Clone)]
+#[derive(Default, Debug, Clone)]
 pub struct MultiDict {
     pub elements: Vec<MultiElement>,
 }
@@ -188,7 +188,8 @@ impl MultiDict {
     ///             key: "some_key".to_string(),
     ///             value: "some_value_2".to_string(),
     ///         });
-    /// println!("{}", map.len()); // 2
+    /// println!("{}", map.len());
+    /// // 2
     /// ```
     /// ```
     /// use multidict::{MultiDict, MultiElement};
@@ -206,11 +207,12 @@ impl MultiDict {
     ///             key: "some_other_key".to_string(),
     ///             value: "some_value_3".to_string(),
     ///         });
-    /// println!("{}", map.len()); // 3
+    /// println!("{}", map.len());
+    /// // 3
     /// ```
     pub fn new_capacity(capacity: &usize) -> Self {
         MultiDict {
-            elements: Vec::with_capacity(capacity.clone()),
+            elements: Vec::with_capacity(*capacity),
         }
     }
 
@@ -229,12 +231,44 @@ impl MultiDict {
     ///             key: "some_key".to_string(),
     ///             value: "some_value_2".to_string(),
     ///         });
-    /// println!("{}", map.len()); // 2
+    /// println!("{}", map.len());
+    /// // 2
     /// ```
     pub fn len(&self) -> usize {
         self.elements.len()
     }
 
+    /// Return true if `MultiDict` has no elements,
+    /// else false
+    ///
+    /// # Examples
+    ///
+    /// When some elements is added
+    /// ```
+    /// use multidict::{MultiDict, MultiElement};
+    ///
+    /// let mut map = MultiDict::new();
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
+    /// println!("{}", map.is_empty());
+    /// // false
+    /// ```
+    /// ```
+    /// use multidict::{MultiDict, MultiElement};
+    ///
+    /// let mut map = MultiDict::new();
+    /// println!("{}", map.is_empty());
+    /// // true
+    /// ```
+    pub fn is_empty(&self) -> bool {
+        self.elements.is_empty()
+    }
     /// Append (key, value) pair to the MultiDict.
     ///
     /// # Examples
@@ -403,7 +437,7 @@ impl MultiDict {
                 results.add(item.clone());
             }
         }
-        if results.len() > 0 {
+        if !results.is_empty() {
             Ok(results)
         } else {
             Err("No matching key found")
