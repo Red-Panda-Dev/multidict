@@ -71,11 +71,11 @@
 //! //  MultiElement { key: "some_other_key", value: "some_value_3" }
 //! // ] }
 //! ```
-
+use core::slice::Iter;
 use std::fmt;
 
 /// `MultiElement` - element of `MultiDict` structure Vec.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct MultiElement {
     pub key: String,
     pub value: String,
@@ -238,6 +238,54 @@ impl MultiDict {
         self.elements.len()
     }
 
+    /// Return an iterator over the element.
+    ///
+    /// The iterator yields all items from start to end.
+    ///
+    /// # Examples
+    /// ```
+    /// use multidict::{MultiDict, MultiElement};
+    ///
+    /// let mut map = MultiDict::new();
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
+    /// for el in map.iter(){
+    ///     println!("{el}")
+    /// }
+    /// // MultiElement < "some_key":"some_value_1" >
+    /// // MultiElement < "some_key":"some_value_2" >
+    /// ```
+    ///
+    /// ```
+    /// use multidict::{MultiDict, MultiElement};
+    ///
+    /// let mut map = MultiDict::new();
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_1".to_string(),
+    ///         });
+    /// map.add(MultiElement {
+    ///             key: "some_key".to_string(),
+    ///             value: "some_value_2".to_string(),
+    ///         });
+    /// let mut iterator = map.iter();
+    /// assert_eq!(iterator.next(), Some(map.elements.iter().nth(0).unwrap()));
+    /// assert_eq!(iterator.next(), Some(&MultiElement {
+    ///                                     key: "some_key".to_string(),
+    ///                                     value: "some_value_2".to_string(),
+    ///                                 })
+    ///         );
+    /// ```
+    pub fn iter(&self) -> Iter<MultiElement> {
+        self.elements.iter()
+    }
+
     /// Return true if `MultiDict` has **no** elements,
     /// else false
     ///
@@ -269,6 +317,7 @@ impl MultiDict {
     pub fn is_empty(&self) -> bool {
         self.elements.is_empty()
     }
+
     /// Append (key, value) pair to the MultiDict.
     ///
     /// # Examples
